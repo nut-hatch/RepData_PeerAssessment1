@@ -7,7 +7,8 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r setoptions,warning=FALSE,message=FALSE,echo=TRUE,results='hide'}
+
+```r
 library(lattice);
 library(dplyr);
 
@@ -18,24 +19,38 @@ activity$date <- as.Date(as.character(activity$date), "%Y-%m-%d")
 
 
 ## What is mean total number of steps taken per day?
-```{r echo=TRUE}
+
+```r
 # Calculate the total number of steps taken per day
 totalStepsByDay <- activity %>% group_by(date) %>% summarise(steps = sum(steps))
 
  # Make a histogram of the total number of steps taken each day
 hist(totalStepsByDay$steps, xlab = "Total Steps Per Day", main="Total # of Steps Taken Each Day")
-dev.off();
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
+
+```r
+dev.off();
+```
+
+```
+## null device 
+##           1
+```
+
+```r
 # Calculate and report the mean and median of the total number of steps taken per day
 stepsMean <- mean(totalStepsByDay$steps, na.rm = T)
 stepsMedian <- median(totalStepsByDay$steps, na.rm = T)
 ```
 
-- Mean total steps per day: _`r stepsMean`_
-- Median total steps per day: _`r stepsMedian`_
+- Mean total steps per day: _1.0766189\times 10^{4}_
+- Median total steps per day: _10765_
 
 ## What is the average daily activity pattern?
-```{r echo=TRUE}
+
+```r
 # Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 # Compute average steps per interval
@@ -44,25 +59,38 @@ names(stepsByIntervalAveragedByDay) <- c("interval", "average.steps")
 
 # Plot
 with(stepsByIntervalAveragedByDay, plot(interval,average.steps,type="l", ylab="Avg # of Steps", xlab="Interval"))
-dev.off();
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
+dev.off();
+```
+
+```
+## null device 
+##           1
+```
+
+```r
 # Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 maxInterval <- stepsByIntervalAveragedByDay[max(stepsByIntervalAveragedByDay$average.steps),]
 ```
 
-- The interval with the maximum number of steps is: _`r maxInterval$interval`_ with _`r maxInterval$average.steps`_ steps.
+- The interval with the maximum number of steps is: _1705_ with _56.3018868_ steps.
 
 ## Imputing missing values
-```{r echo=TRUE}
+
+```r
 # Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 naIdx <- which(is.na(activity$steps))
 numberMissingValues <- length(naIdx)
 ```
 
-- _`r numberMissingValues`_ values are missing.
+- _2304_ values are missing.
 
-```{r}
 
+```r
 # Devise a strategy for filling in all of the missing values in the dataset.
 # Approach taken: Replacing NA with mean.
 
@@ -75,21 +103,33 @@ activityImputed[naIdx, "steps"] <- imputeValues
 # Make a histogram of the total number of steps taken each day
 totalStepsByDayImputed <- activityImputed %>% group_by(date) %>% summarise(steps = sum(steps))
 hist(totalStepsByDay$steps, xlab = "Total Steps Per Day", main="Total # of Steps Taken Each Day")
-dev.off()
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
+dev.off()
+```
+
+```
+## null device 
+##           1
+```
+
+```r
 # Calculate and report the mean and median total number of steps taken per day.
 stepsMeanImputed <- mean(totalStepsByDayImputed$steps)
 stepsMedianImputed <- median(totalStepsByDayImputed$steps)
-
 ```
 
-- Mean total steps per day: _`r stepsMeanImputed`_
-- Median total steps per day: _`r stepsMedianImputed`_
-- Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps? => The mean total number of steps remains the same (_`r stepsMean`_ and _`r stepsMeanImputed`_), the median changed to the same value like the mean with the imputed missing values (from _`r stepsMedian`_ to  _`r stepsMedianImputed`_)
+- Mean total steps per day: _1.0766189\times 10^{4}_
+- Median total steps per day: _1.0766189\times 10^{4}_
+- Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps? => The mean total number of steps remains the same (_1.0766189\times 10^{4}_ and _1.0766189\times 10^{4}_), the median changed to the same value like the mean with the imputed missing values (from _10765_ to  _1.0766189\times 10^{4}_)
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r echo=TRUE}
+
+```r
 # Create a new factor variable in the dataset with two levels – “weekday” and “weekend”
 activityImputed["weekday"] = factor(sapply(activityImputed$date, function(x) {
     if (weekdays(x) == "Sunday" | weekdays(x) == "Saturday") {
@@ -103,3 +143,5 @@ activityImputed["weekday"] = factor(sapply(activityImputed$date, function(x) {
 stepsAveragedByWeekdayAndInterval <- aggregate(steps ~ interval + weekday, mean, data = activityImputed)
 xyplot(steps ~ interval | weekday, data = stepsAveragedByWeekdayAndInterval, type = "l", layout = c(1, 2), xlab = "Interval", ylab = "Average number of steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
